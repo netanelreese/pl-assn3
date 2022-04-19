@@ -131,21 +131,28 @@ a_expr : a_expr T_ADD a_term
     | a_expr T_SUB a_term
       {
         if ($1->datatype != $3->datatype)
-        {
-          cout << "Incompatible datatypes\n";
-          exit (1);
-        }
-        // TASK: Complete support for OP_SUB and OP_FSUB. See OP_ADD and OP_FADD code above.
-        symbol_t * res;
-        if ($1->datatype == DTYPE_INT)
-        {
-          res = make_temp (symtab, $1->datatype);
-          itab_instruction_add (itab, OP_SUB, res->addr, $1->addr, $3->addr);
-        }
-        $$ = res;
-        #ifdef _SMP_DEBUG_
-        cout << "On a_expr (2)\n";
-        #endif
+	{
+	  cout << "Incompatible datatypes\n";
+	  exit (1);
+	}
+	// TASK: Complete support for OP_SUB and OP_FSUB. See OP_ADD and OP_FADD code above.
+	symbol_t * res;
+	if ($1->datatype == DTYPE_INT)
+	{
+	  res = make_temp (symtab, $1->datatype);
+	  itab_instruction_add (itab, OP_SUB, res->addr, $1->addr, $3->addr);
+	}
+	if ($1->datatype == DTYPE_FLOAT)
+	{
+	  //res = make_temp (symtab, $1->datatype);
+	  //itab_instruction_add (itab, OP_SUB, res->addr, $1->addr, $3->addr);
+	  res = make_temp (symtab, $1->datatype);
+	  itab_instruction_add (itab, OP_FSUB, res->addr, $1->addr, $3->addr);
+	}
+	$$ = res;
+	#ifdef _SMP_DEBUG_
+	cout << "On a_expr (2)\n";
+	#endif
       }
     | a_term
       {
@@ -158,7 +165,7 @@ a_expr : a_expr T_ADD a_term
 
 a_term : a_term T_MUL a_fact
       {
-        if ($1->datatype != $3->datatype)
+    if ($1->datatype != $3->datatype)
         {
           cout << "Incompatible datatypes\n";
           exit (1);
@@ -170,6 +177,13 @@ a_term : a_term T_MUL a_fact
           res = make_temp (symtab, $1->datatype);
           itab_instruction_add (itab, OP_MUL, res->addr, $1->addr, $3->addr);
         }
+	if ($1->datatype == DTYPE_FLOAT)
+	{
+	  //res = make_temp (symtab, $1->datatype);
+          //itab_instruction_add (itab, OP_MUL, res->addr, $1->addr, $3->addr);
+	  res = make_temp (symtab, $1->datatype);
+          itab_instruction_add (itab, OP_FMUL, res->addr, $1->addr, $3->addr);
+	}
         $$ = res;
       }
     | a_term T_DIV a_fact
