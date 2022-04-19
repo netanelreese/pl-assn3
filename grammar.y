@@ -208,7 +208,7 @@ a_term : a_term T_MUL a_fact
           itab_instruction_add (itab, OP_FDIV, res->addr, $1->addr, $3->addr);
 	}
         $$ = res;
-       
+
       }
     | a_fact
       {
